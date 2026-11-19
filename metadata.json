@@ -1,0 +1,6 @@
+{
+  "name": "MediSlot AI",
+  "description": "AI-powered clinical scheduling, symptom triage, telehealth readiness, and clinic capacity platform.",
+  "requestFramePermissions": ["camera", "microphone"],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
