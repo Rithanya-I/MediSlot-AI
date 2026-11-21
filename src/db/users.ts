@@ -1,17 +1,34 @@
-import { db } from './index.ts';
+import { db, isDatabaseConfigured } from './index.ts';
 import { patientProfiles, users } from './schema.ts';
 import { eq } from 'drizzle-orm';
+
+const inMemoryUsers = new Map<string, any>();
 
 export async function getOrCreateUser(
   uid: string,
   email: string,
   displayName?: string
 ) {
+  const resolvedName =
+    displayName && displayName.trim().length > 0
+      ? displayName.trim()
+      : email.split('@')[0] || 'Patient';
+
+  if (!isDatabaseConfigured()) {
+    if (!inMemoryUsers.has(uid)) {
+      inMemoryUsers.set(uid, {
+        id: inMemoryUsers.size + 1,
+        uid,
+        email,
+        displayName: resolvedName,
+        role: 'patient',
+        createdAt: new Date(),
+      });
+    }
+    return inMemoryUsers.get(uid);
+  }
+
   try {
-    const resolvedName =
-      displayName && displayName.trim().length > 0
-        ? displayName.trim()
-        : email.split('@')[0] || 'Patient';
 
     const result = await db
       .insert(users)
